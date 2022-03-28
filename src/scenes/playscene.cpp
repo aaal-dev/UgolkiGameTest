@@ -159,15 +159,37 @@ void PlayScene::cpuMoveLeftUp(unsigned int deltaTime) {
 			if (cell->getId() != event->playerIndex) {
 				if (randomMove()) {
 					if (isLeftCellReachableFrom(cell)) {
+						if (cell->column <= 4 && columnCapacity[cell->column-1] == 3) {
+							continue;
+						}
 						moveLeftFrom(cell);
 						changePlayer(1);
 						break;
+					} else if (cell->column <= 3) {
+						if (!isUpCellReachableFrom(cell) && cell->row <= 3) {
+							if (isDownCellReachableFrom(cell)) {
+								moveDownFrom(cell);
+								changePlayer(1);
+								break;
+							}
+						}
 					}
 				} else {
 					if (isUpCellReachableFrom(cell)) {
+						if (cell->row <= 4 && rowCapacity[cell->row-1] == 3) {
+							continue;
+						}
 						moveUpFrom(cell);
 						changePlayer(1);
 						break;
+					} else if (cell->row <= 3) {
+						if (!isLeftCellReachableFrom(cell) && cell->column <= 3) {
+							if (isRightCellReachableFrom(cell)) {
+								moveRigthFrom(cell);
+								changePlayer(1);
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -185,15 +207,37 @@ void PlayScene::cpuMoveRightDown(unsigned int deltaTime){
 			if (cell->getId() != event->playerIndex) {
 				if (randomMove()) {
 					if (isRightCellReachableFrom(cell)) {
+						if (cell->column >= 5 && columnCapacity[cell->column+1] == 3) {
+							continue;
+						}
 						moveRigthFrom(cell);
 						changePlayer(1);
 						break;
+					} else if (cell->column >= 6) {
+						if (!isDownCellReachableFrom(cell) && cell->row >= 6) {
+							if (isUpCellReachableFrom(cell)) {
+								moveUpFrom(cell);
+								changePlayer(1);
+								break;
+							}
+						}
 					}
 				} else {
 					if (isDownCellReachableFrom(cell)) {
+						if (cell->row >= 5 && rowCapacity[cell->row+1] == 3) {
+							continue;
+						}
 						moveDownFrom(cell);
 						changePlayer(1);
 						break;
+					} else if (cell->row >= 6) {
+						if (!isRightCellReachableFrom(cell) && cell->column >= 6) {
+							if (isLeftCellReachableFrom(cell)) {
+								moveLeftFrom(cell);
+								changePlayer(1);
+								break;
+							} 
+						}
 					}
 				}
 			}
@@ -209,7 +253,7 @@ bool PlayScene::randomMove() {
 }
 
 void PlayScene::moveLeftFrom(Cell *cell) {
-	if (cell->column <= 4) {
+	if (cell->column <= 2) {
 		columnCapacity[cell->column-1]++;
 		columnCapacity[cell->column]--;
 	}
@@ -217,7 +261,7 @@ void PlayScene::moveLeftFrom(Cell *cell) {
 }
 
 void PlayScene::moveRigthFrom(Cell *cell) {
-	if (cell->column >= 5) {
+	if (cell->column >= 7) {
 		columnCapacity[cell->column+1]++;
 		columnCapacity[cell->column]--;
 	}
@@ -225,7 +269,7 @@ void PlayScene::moveRigthFrom(Cell *cell) {
 }
 
 void PlayScene::moveUpFrom(Cell *cell) {
-	if (cell->row <= 4) {
+	if (cell->row <= 2) {
 		rowCapacity[cell->row-1]++;
 		rowCapacity[cell->row]--;
 	}
@@ -233,7 +277,7 @@ void PlayScene::moveUpFrom(Cell *cell) {
 }
 
 void PlayScene::moveDownFrom(Cell *cell) {
-	if (cell->row >= 5) {
+	if (cell->row >= 7) {
 		rowCapacity[cell->row+1]++;
 		rowCapacity[cell->row]--;
 	}
@@ -241,87 +285,46 @@ void PlayScene::moveDownFrom(Cell *cell) {
 }
 
 bool PlayScene::isLeftCellReachableFrom(Cell *cell) {
-	if (cell->column <= 4 && columnCapacity[cell->column-1] == 3) {
-		return false;
-	}
 	return cell->column > 0 && !cells[cell->index - 1]->ocupated;
 }
 
 bool PlayScene::isRightCellReachableFrom(Cell *cell) {
-	if (cell->column >= 5 && columnCapacity[cell->column+1] == 3) {
-		return false;
-	}
 	return cell->column < 7 && !cells[cell->index + 1]->ocupated;
 }
 
 bool PlayScene::isUpCellReachableFrom(Cell *cell) {
-	if (cell->row <= 4 && rowCapacity[cell->row-1] == 3) {
-		return false;
-	}
 	return cell->row > 0 && !cells[cell->index - 8]->ocupated;
 }
 
 bool PlayScene::isDownCellReachableFrom(Cell *cell) {
-		if (cell->row >= 5 && rowCapacity[cell->row+1] == 3) {
-		return false;
-	}
 	return cell->row < 7 && !cells[cell->index + 8]->ocupated;
 }
 
 void PlayScene::checkWhoIsWin() {
-	if(event->playerIndex == 1) {
-		if (cells[0]->hasPlayer(2) &&
-			cells[1]->hasPlayer(2) &&
-			cells[2]->hasPlayer(2) &&
-			cells[8]->hasPlayer(2) &&
-			cells[9]->hasPlayer(2) &&
-			cells[10]->hasPlayer(2) &&
-			cells[16]->hasPlayer(2) &&
-			cells[17]->hasPlayer(2) &&
-			cells[18]->hasPlayer(2))
-		{
-			event->gameIsEnded = true;
-			event->winnerIndex = 2;
-		} else if
-			(cells[45]->hasPlayer(1) &&
-			cells[46]->hasPlayer(1) &&
-			cells[47]->hasPlayer(1) &&
-			cells[53]->hasPlayer(1) &&
-			cells[54]->hasPlayer(1) &&
-			cells[55]->hasPlayer(1) &&
-			cells[61]->hasPlayer(1) &&
-			cells[62]->hasPlayer(1) &&
-			cells[63]->hasPlayer(1)) 
-		{
-			event->gameIsEnded = true;
-			event->winnerIndex = 1;
-		}
-	} else if(event->playerIndex == 2) {
-		if (cells[0]->hasPlayer(2) &&
-			cells[1]->hasPlayer(2) &&
-			cells[2]->hasPlayer(2) &&
-			cells[8]->hasPlayer(2) &&
-			cells[9]->hasPlayer(2) &&
-			cells[10]->hasPlayer(2) &&
-			cells[16]->hasPlayer(2) &&
-			cells[17]->hasPlayer(2) &&
-			cells[18]->hasPlayer(2)) 
-		{
-			event->gameIsEnded = true;
-			event->winnerIndex = 1;
-		} else if
-			(cells[45]->hasPlayer(1) &&
-			cells[46]->hasPlayer(1) &&
-			cells[47]->hasPlayer(1) &&
-			cells[53]->hasPlayer(1) &&
-			cells[54]->hasPlayer(1) &&
-			cells[55]->hasPlayer(1) &&
-			cells[61]->hasPlayer(1) &&
-			cells[62]->hasPlayer(1) &&
-			cells[63]->hasPlayer(1)) 
-		{
-			event->gameIsEnded = true;
-			event->winnerIndex = 2;
-		}
+	if (cells[0]->hasPlayer(2) &&
+		cells[1]->hasPlayer(2) &&
+		cells[2]->hasPlayer(2) &&
+		cells[8]->hasPlayer(2) &&
+		cells[9]->hasPlayer(2) &&
+		cells[10]->hasPlayer(2) &&
+		cells[16]->hasPlayer(2) &&
+		cells[17]->hasPlayer(2) &&
+		cells[18]->hasPlayer(2))
+	{
+		event->gameIsEnded = true;
+		event->winnerIndex = 2;
+	} else if
+		(cells[45]->hasPlayer(1) &&
+		cells[46]->hasPlayer(1) &&
+		cells[47]->hasPlayer(1) &&
+		cells[53]->hasPlayer(1) &&
+		cells[54]->hasPlayer(1) &&
+		cells[55]->hasPlayer(1) &&
+		cells[61]->hasPlayer(1) &&
+		cells[62]->hasPlayer(1) &&
+		cells[63]->hasPlayer(1)) 
+	{
+		event->gameIsEnded = true;
+		event->winnerIndex = 1;
 	}
 }
